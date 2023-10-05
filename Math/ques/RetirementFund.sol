@@ -27,25 +27,29 @@ contract RetirementFundChallenge {
     }
 
     function withdraw() public {
-        require(msg.sender == owner);
+        unchecked {
+            require(msg.sender == owner);
 
-        if (block.timestamp < expiration) {
-            // early withdrawal incurs a 10% penalty
-            payable(msg.sender).transfer(address(this).balance * 9 / 10);
-        } else {
-            payable(msg.sender).transfer(address(this).balance);
+            if (block.timestamp < expiration) {
+                // early withdrawal incurs a 10% penalty
+                payable(msg.sender).transfer(address(this).balance * 9 / 10);
+            } else {
+                payable(msg.sender).transfer(address(this).balance);
+            }
         }
     }
 
     function collectPenalty() public {
-        require(msg.sender == beneficiary);
+        unchecked {
+            require(msg.sender == beneficiary);
 
-        uint256 withdrawn = startBalance - address(this).balance;
+            uint256 withdrawn = startBalance - address(this).balance;
 
-        // an early withdrawal occurred
-        require(withdrawn > 0);
+            // an early withdrawal occurred
+            require(withdrawn > 0);
 
-        // penalty is what's left
-        payable(msg.sender).transfer(address(this).balance);
+            // penalty is what's left
+            payable(msg.sender).transfer(address(this).balance);
+        }
     }
 }
